@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}预约场地 - 体育场所预订系统{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">预约场地</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <strong>场地信息：</strong> {{ field.name }} ({{ field.venue.name }})
+                    <br>
+                    <strong>价格：</strong> ¥{{ field.venue.price_per_hour }}/小时
+                </div>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">提交预约</button>
+                    <a href="{% url 'venues:venue_list' %}" class="btn btn-secondary">取消</a>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">预约须知</h5>
+            </div>
+            <div class="card-body">
+                <ul>
+                    <li>请选择预约日期和时间段</li>
+                    <li>预约成功后需要管理员审批</li>
+                    <li>如需取消，请提前一天操作</li>
+                    <li>如有疑问，请联系管理员</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

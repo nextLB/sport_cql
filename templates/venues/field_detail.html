@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ field.name }} - 体育场所预订系统{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">{{ field.name }}</h5>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tr>
+                        <th>所属场馆:</th>
+                        <td>{{ field.venue.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>场地类型:</th>
+                        <td>{{ field.get_field_type_display }}</td>
+                    </tr>
+                    <tr>
+                        <th>容纳人数:</th>
+                        <td>{{ field.capacity }}人</td>
+                    </tr>
+                    <tr>
+                        <th>价格:</th>
+                        <td><strong class="text-primary">¥{{ field.venue.price_per_hour }}/小时</strong></td>
+                    </tr>
+                    <tr>
+                        <th>状态:</th>
+                        <td>
+                            <span class="badge bg-{% if field.status == 'available' %}success{% else %}warning{% endif %}">
+                                {{ field.get_status_display }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% if field.description %}
+                    <tr>
+                        <th>描述:</th>
+                        <td>{{ field.description }}</td>
+                    </tr>
+                    {% endif %}
+                </table>
+                
+                {% if field.status == 'available' and user.is_authenticated %}
+                <a href="{% url 'bookings:booking_create' field.id %}" class="btn btn-primary btn-lg">立即预约</a>
+                {% elif not user.is_authenticated %}
+                <a href="{% url 'users:login' %}" class="btn btn-primary btn-lg">登录后预约</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

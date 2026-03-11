@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}评价预约 - 体育场所预订系统{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">评价预约</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <strong>预约信息：</strong> {{ booking.field.venue.name }} - {{ booking.field.name }}
+                    <br>
+                    <strong>日期：</strong> {{ booking.booking_date }} {{ booking.start_time }} - {{ booking.end_time }}
+                </div>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">提交评价</button>
+                    <a href="{% url 'bookings:my_bookings' %}" class="btn btn-secondary">取消</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

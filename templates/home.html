@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}首页 - 体育场所预订系统{% endblock %}
+
+{% block content %}
+<div class="hero bg-light py-5 mb-4 rounded">
+    <div class="container text-center">
+        <h1 class="display-4">欢迎使用体育场所预订系统</h1>
+        <p class="lead">轻松预订各类体育场所，享受运动带来的乐趣</p>
+        <a href="{% url 'venues:venue_list' %}" class="btn btn-primary btn-lg">立即预订</a>
+    </div>
+</div>
+
+<h2 class="mb-4">热门场馆</h2>
+<div class="row">
+    {% for venue in venues %}
+    <div class="col-md-4 mb-4">
+        <div class="card venue-card h-100">
+            {% if venue.image %}
+            <img src="{{ venue.image.url }}" class="card-img-top" alt="{{ venue.name }}" style="height: 200px; object-fit: cover;">
+            {% else %}
+            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                <i class="bi bi-building text-white" style="font-size: 3rem;"></i>
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ venue.name }}</h5>
+                <p class="card-text text-muted">
+                    <i class="bi bi-tag"></i> {{ venue.get_venue_type_display }}
+                </p>
+                <p class="card-text">
+                    <i class="bi bi-currency-dollar"></i> ¥{{ venue.price_per_hour }}/小时
+                </p>
+                <a href="{% url 'venues:venue_detail' venue.id %}" class="btn btn-outline-primary">查看详情</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <p class="text-muted text-center">暂无场馆信息</p>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="text-center mt-4">
+    <a href="{% url 'venues:venue_list' %}" class="btn btn-link">查看更多场馆 &rarr;</a>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="text-center">
+            <i class="bi bi-calendar-check text-primary" style="font-size: 2.5rem;"></i>
+            <h4 class="mt-3">便捷预约</h4>
+            <p class="text-muted">在线预约场地，无需排队</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="text-center">
+            <i class="bi bi-clock-history text-primary" style="font-size: 2.5rem;"></i>
+            <h4 class="mt-3">实时查看</h4>
+            <p class="text-muted">随时查看预约状态</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="text-center">
+            <i class="bi bi-shield-check text-primary" style="font-size: 2.5rem;"></i>
+            <h4 class="mt-3">安全可靠</h4>
+            <p class="text-muted">数据安全有保障</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

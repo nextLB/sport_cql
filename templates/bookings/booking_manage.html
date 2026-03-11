@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}预约管理 - 体育场所预订系统{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">预约管理</h2>
+
+<div class="mb-3">
+    <a href="?status=" class="btn btn-sm btn-outline-primary {% if not status %}active{% endif %}">全部</a>
+    <a href="?status=pending" class="btn btn-sm btn-outline-warning {% if status == 'pending' %}active{% endif %}">待审批</a>
+    <a href="?status=confirmed" class="btn btn-sm btn-outline-success {% if status == 'confirmed' %}active{% endif %}">已确认</a>
+    <a href="?status=cancelled" class="btn btn-sm btn-outline-danger {% if status == 'cancelled' %}active{% endif %}">已取消</a>
+    <a href="?status=completed" class="btn btn-sm btn-outline-secondary {% if status == 'completed' %}active{% endif %}">已完成</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>编号</th>
+                <th>用户</th>
+                <th>场馆</th>
+                <th>场地</th>
+                <th>日期</th>
+                <th>时间</th>
+                <th>总价</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in page_obj %}
+            <tr>
+                <td>#{{ booking.id }}</td>
+                <td>{{ booking.user.username }}</td>
+                <td>{{ booking.field.venue.name }}</td>
+                <td>{{ booking.field.name }}</td>
+                <td>{{ booking.booking_date }}</td>
+                <td>{{ booking.start_time }} - {{ booking.end_time }}</td>
+                <td>¥{{ booking.total_price }}</td>
+                <td>
+                    <span class="badge bg-{% if booking.status == 'pending' %}warning{% elif booking.status == 'confirmed' %}success{% elif booking.status == 'cancelled' or booking.status == 'rejected' %}danger{% else %}secondary{% endif %}">
+                        {{ booking.get_status_display }}
+                    </span>
+                </td>
+                <td>
+                    {% if booking.status == 'pending' %}
+                    <form method="post" action="{% url 'bookings:booking_approve' booking.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="confirm">
+                        <button type="submit" class="btn btn-sm btn-success">确认</button>
+                    </form>
+                    <form method="post" action="{% url 'bookings:booking_approve' booking.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="reject">
+                        <button type="submit" class="btn btn-sm btn-danger">拒绝</button>
+                    </form>
+                    {% endif %}
+                    <a href="{% url 'bookings:booking_edit' booking.id %}" class="btn btn-sm btn-info">编辑</a>
+                    <a href="{% url 'bookings:booking_delete' booking.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('确定要删除该预约吗？')">删除</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="9" class="text-center text-muted">暂无预约记录</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if page_obj.has_other_pages %}
+<nav>
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">上一页</a></li>
+        {% endif %}
+        <li class="page-item active"><span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
+        {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">下一页</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

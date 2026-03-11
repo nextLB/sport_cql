@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if object %}编辑{% else %}创建{% endif %}场地 - 体育场所预订系统{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">{% if object %}编辑{% else %}创建{% endif %}场地</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">保存</button>
+                    <a href="{% url 'venues:field_list' %}" class="btn btn-secondary">取消</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
