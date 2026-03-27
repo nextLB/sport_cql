@@ -2,42 +2,349 @@
 
 {% block title %}预约场地 - 体育场所预订系统{% endblock %}
 
+{% block extra_css %}
+<style>
+    .booking-container {
+        background: #f8f9fa;
+        padding: 30px 0;
+    }
+    .booking-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    .booking-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 30px;
+        color: white;
+    }
+    .form-label {
+        font-weight: 600;
+        color: #333;
+    }
+    .form-control, .form-select {
+        border-radius: 10px;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    .time-slot {
+        display: inline-block;
+        padding: 10px 20px;
+        margin: 5px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .time-slot:hover {
+        border-color: #667eea;
+        background: rgba(102, 126, 234, 0.1);
+    }
+    .time-slot.selected {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-color: transparent;
+    }
+    .time-slot.disabled {
+        background: #e9ecef;
+        color: #adb5bd;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+    .price-summary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 25px;
+        border-radius: 15px;
+        text-align: center;
+    }
+    .price-amount {
+        font-size: 2.5rem;
+        font-weight: bold;
+    }
+    .notice-card {
+        border: none;
+        border-radius: 15px;
+        background: #fff3cd;
+        padding: 20px;
+    }
+    .notice-item {
+        display: flex;
+        align-items: center;
+        padding: 8px 0;
+    }
+    .notice-item i {
+        color: #ffc107;
+        margin-right: 10px;
+    }
+    .field-info-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        padding: 20px;
+    }
+    .field-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+    }
+    .calendar-container {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    .date-option {
+        display: inline-block;
+        padding: 12px 20px;
+        margin: 5px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.3s;
+        min-width: 80px;
+    }
+    .date-option:hover {
+        border-color: #667eea;
+    }
+    .date-option.selected {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-color: transparent;
+    }
+    .date-option.disabled {
+        background: #e9ecef;
+        color: #adb5bd;
+        cursor: not-allowed;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">预约场地</h5>
-            </div>
-            <div class="card-body">
-                <div class="alert alert-info">
-                    <strong>场地信息：</strong> {{ field.name }} ({{ field.venue.name }})
-                    <br>
-                    <strong>价格：</strong> ¥{{ field.venue.price_per_hour }}/小时
+<div class="booking-container">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'venues:venue_list' %}">场馆列表</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'venues:venue_detail' field.venue.id %}">{{ field.venue.name }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">预约场地</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            <div class="col-lg-8 mb-4">
+                <div class="booking-card">
+                    <div class="booking-header">
+                        <h3 class="mb-1"><i class="bi bi-calendar-check me-2"></i>预约场地</h3>
+                        <p class="mb-0">请填写预约信息</p>
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="post" id="bookingForm">
+                            {% csrf_token %}
+                            
+                            <div class="mb-4">
+                                <label class="form-label">选择日期</label>
+                                <div id="dateSelector" class="calendar-container">
+                                    {% for i in "01234567"|make_list %}
+                                    <div class="date-option" data-date="{{ i }}">
+                                        {% if forloop.counter0 == 0 %}今天{% elif forloop.counter0 == 1 %}明天{% else %}{{ i }}天后{% endif %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <input type="date" name="booking_date" id="bookingDate" class="form-control mt-3" required>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label">选择开始时间</label>
+                                <div id="startTimeSelector">
+                                    {% for hour in "678910111213141516171819202122"|make_list %}
+                                    <div class="time-slot" data-time="{{ hour }}:00">{{ hour }}:00</div>
+                                    {% endfor %}
+                                </div>
+                                <input type="time" name="start_time" id="startTime" class="form-control mt-3" required>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label">选择结束时间</label>
+                                <div id="endTimeSelector">
+                                    {% for hour in "7891011121314151617181920212223"|make_list %}
+                                    <div class="time-slot" data-time="{{ hour }}:00">{{ hour }}:00</div>
+                                    {% endfor %}
+                                </div>
+                                <input type="time" name="end_time" id="endTime" class="form-control mt-3" required>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label">联系电话 <span class="text-danger">*</span></label>
+                                <input type="text" name="contact_phone" class="form-control" placeholder="请输入您的联系电话" required>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label">备注信息</label>
+                                <textarea name="remark" class="form-control" rows="3" placeholder="如有特殊要求，请在此说明"></textarea>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-check-circle me-2"></i>提交预约
+                                </button>
+                                <a href="{% url 'venues:venue_detail' field.venue.id %}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left me-2"></i>返回场馆详情
+                                </a>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <form method="post">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit" class="btn btn-primary">提交预约</button>
-                    <a href="{% url 'venues:venue_list' %}" class="btn btn-secondary">取消</a>
-                </form>
             </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">预约须知</h5>
-            </div>
-            <div class="card-body">
-                <ul>
-                    <li>请选择预约日期和时间段</li>
-                    <li>预约成功后需要管理员审批</li>
-                    <li>如需取消，请提前一天操作</li>
-                    <li>如有疑问，请联系管理员</li>
-                </ul>
+            
+            <div class="col-lg-4">
+                <div class="field-info-card mb-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-info-circle me-2"></i>场地信息</h5>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="field-icon me-3">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold">{{ field.name }}</div>
+                            <div class="text-muted small">{{ field.venue.name }}</div>
+                        </div>
+                    </div>
+                    <div class="row text-center mb-3">
+                        <div class="col-6">
+                            <div class="fw-bold text-primary">{{ field.get_field_type_display }}</div>
+                            <div class="small text-muted">场地类型</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="fw-bold text-primary">{{ field.capacity }}人</div>
+                            <div class="small text-muted">容纳人数</div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                        <span>价格：</span>
+                        <span class="fw-bold text-primary">¥{{ field.venue.price_per_hour }}/小时</span>
+                    </div>
+                </div>
+                
+                <div class="price-summary mb-4">
+                    <div class="small">预约费用</div>
+                    <div class="price-amount" id="totalPrice">¥0</div>
+                    <div class="small" id="hoursInfo">0 小时</div>
+                </div>
+                
+                <div class="notice-card">
+                    <h6 class="fw-bold mb-3"><i class="bi bi-exclamation-triangle me-2"></i>预约须知</h6>
+                    <div class="notice-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>请选择可用的日期和时间</span>
+                    </div>
+                    <div class="notice-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>预约成功后需等待管理员审批</span>
+                    </div>
+                    <div class="notice-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>请准时到达场地</span>
+                    </div>
+                    <div class="notice-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>如需取消，请提前1天操作</span>
+                    </div>
+                    <div class="notice-item">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>如有疑问请联系：{{ field.venue.phone }}</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    const pricePerHour = {{ field.venue.price_per_hour }};
+    
+    // 初始化日期选择
+    const today = new Date();
+    const dateSelector = document.getElementById('dateSelector');
+    const bookingDate = document.getElementById('bookingDate');
+    const dateOptions = dateSelector.querySelectorAll('.date-option');
+    
+    // 设置日期
+    function setDate(days) {
+        const date = new Date(today);
+        date.setDate(date.getDate() + days);
+        const dateStr = date.toISOString().split('T')[0];
+        bookingDate.value = dateStr;
+        
+        dateOptions.forEach(opt => opt.classList.remove('selected'));
+        dateOptions[days].classList.add('selected');
+    }
+    
+    dateOptions.forEach((opt, index) => {
+        opt.addEventListener('click', () => setDate(index));
+    });
+    
+    setDate(0);
+    
+    // 时间选择
+    const startTimeSelector = document.getElementById('startTimeSelector');
+    const endTimeSelector = document.getElementById('endTimeSelector');
+    const startTimeInput = document.getElementById('startTime');
+    const endTimeInput = document.getElementById('endTime');
+    const startSlots = startTimeSelector.querySelectorAll('.time-slot');
+    const endSlots = endTimeSelector.querySelectorAll('.time-slot');
+    
+    startSlots.forEach(slot => {
+        slot.addEventListener('click', () => {
+            startSlots.forEach(s => s.classList.remove('selected'));
+            slot.classList.add('selected');
+            startTimeInput.value = slot.dataset.time;
+            calculatePrice();
+        });
+    });
+    
+    endSlots.forEach(slot => {
+        slot.addEventListener('click', () => {
+            endSlots.forEach(s => s.classList.remove('selected'));
+            slot.classList.add('selected');
+            endTimeInput.value = slot.dataset.time;
+            calculatePrice();
+        });
+    });
+    
+    function calculatePrice() {
+        const start = startTimeInput.value;
+        const end = endTimeInput.value;
+        
+        if (start && end) {
+            const startHour = parseInt(start.split(':')[0]);
+            const endHour = parseInt(end.split(':')[0]);
+            const hours = endHour - startHour;
+            
+            if (hours > 0) {
+                const total = hours * pricePerHour;
+                document.getElementById('totalPrice').textContent = '¥' + total;
+                document.getElementById('hoursInfo').textContent = hours + ' 小时';
+            } else {
+                document.getElementById('totalPrice').textContent = '¥0';
+                document.getElementById('hoursInfo').textContent = '0 小时';
+            }
+        }
+    }
+    
+    startTimeInput.addEventListener('change', calculatePrice);
+    endTimeInput.addEventListener('change', calculatePrice);
+</script>
 {% endblock %}

@@ -66,7 +66,7 @@ def venue_create(request):
         if form.is_valid():
             form.save()
             messages.success(request, '场馆创建成功')
-            return redirect('venue_list')
+            return redirect('venues:venue_list')
     else:
         form = VenueForm()
     return render(request, 'venues/venue_form.html', {'form': form})
@@ -80,7 +80,7 @@ def venue_edit(request, venue_id):
         if form.is_valid():
             form.save()
             messages.success(request, '场馆更新成功')
-            return redirect('venue_list')
+            return redirect('venues:venue_list')
     else:
         form = VenueForm(instance=venue)
     return render(request, 'venues/venue_form.html', {'form': form})
@@ -91,7 +91,7 @@ def venue_delete(request, venue_id):
     venue = get_object_or_404(Venue, id=venue_id)
     venue.delete()
     messages.success(request, '场馆删除成功')
-    return redirect('venue_list')
+    return redirect('venues:venue_list')
 
 
 @user_passes_test(lambda u: u.is_staff or u.user_type == 'admin')
@@ -101,7 +101,7 @@ def field_create(request):
         if form.is_valid():
             form.save()
             messages.success(request, '场地创建成功')
-            return redirect('field_list')
+            return redirect('venues:field_list')
     else:
         form = FieldForm()
     return render(request, 'venues/field_form.html', {'form': form})
@@ -115,7 +115,7 @@ def field_edit(request, field_id):
         if form.is_valid():
             form.save()
             messages.success(request, '场地更新成功')
-            return redirect('field_list')
+            return redirect('venues:field_list')
     else:
         form = FieldForm(instance=field)
     return render(request, 'venues/field_form.html', {'form': form})
@@ -126,7 +126,7 @@ def field_delete(request, field_id):
     field = get_object_or_404(Field, id=field_id)
     field.delete()
     messages.success(request, '场地删除成功')
-    return redirect('field_list')
+    return redirect('venues:field_list')
 
 
 def get_field_schedule(request, field_id):

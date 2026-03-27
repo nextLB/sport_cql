@@ -2,26 +2,109 @@
 
 {% block title %}登录 - 体育场所预订系统{% endblock %}
 
+{% block extra_css %}
+<style>
+    .login-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .login-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+    .login-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px 20px 0 0;
+        padding: 30px;
+    }
+    .form-control {
+        border-radius: 10px;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+    }
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    .btn-login {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 12px;
+        font-weight: 600;
+    }
+    .btn-login:hover {
+        opacity: 0.9;
+    }
+    .user-role-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+    .input-icon {
+        position: relative;
+    }
+    .input-icon i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #667eea;
+    }
+    .input-icon input {
+        padding-left: 40px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow">
-            <div class="card-body">
-                <h3 class="card-title text-center mb-4">登录</h3>
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label class="form-label">用户名</label>
-                        <input type="text" name="username" class="form-control" required>
+<div class="login-container d-flex align-items-center justify-content-center py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5 col-lg-4">
+                <div class="card login-card">
+                    <div class="login-header text-center text-white">
+                        <i class="bi bi-calendar-event fs-1 mb-3"></i>
+                        <h3>体育场所预订系统</h3>
+                        <p class="mb-0">欢迎回来</p>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">密码</label>
-                        <input type="password" name="password" class="form-control" required>
+                    <div class="card-body p-4">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="mb-3 input-icon">
+                                <i class="bi bi-person-fill"></i>
+                                <input type="text" name="username" class="form-control" placeholder="请输入用户名" required>
+                            </div>
+                            <div class="mb-3 input-icon">
+                                <i class="bi bi-lock-fill"></i>
+                                <input type="password" name="password" class="form-control" placeholder="请输入密码" required>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="remember">
+                                <label class="form-check-label" for="remember">记住我</label>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-login w-100 text-white">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>登 录
+                            </button>
+                        </form>
+                        <hr class="my-4">
+                        <div class="text-center">
+                            <p class="mb-2">还没有账号？</p>
+                            <a href="{% url 'users:register' %}" class="btn btn-outline-primary">
+                                <i class="bi bi-person-plus me-1"></i>立即注册
+                            </a>
+                        </div>
+                        <div class="mt-4 p-3 bg-light rounded">
+                            <div class="small text-muted">
+                                <div class="mb-2"><i class="bi bi-info-circle me-1"></i>账户类型说明：</div>
+                                <ul class="mb-0 ps-3">
+                                    <li><strong>普通用户：</strong>可浏览场馆、预约场地、查看预约记录</li>
+                                    <li><strong>管理员：</strong>可管理场馆、场地、预约及用户</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">登录</button>
-                </form>
-                <div class="text-center mt-3">
-                    <p>还没有账号？ <a href="{% url 'users:register' %}">立即注册</a></p>
                 </div>
             </div>
         </div>

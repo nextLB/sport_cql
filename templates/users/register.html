@@ -2,41 +2,176 @@
 
 {% block title %}注册 - 体育场所预订系统{% endblock %}
 
+{% block extra_css %}
+<style>
+    .register-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+    .register-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+    .register-header {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        border-radius: 20px 20px 0 0;
+        padding: 30px;
+    }
+    .form-control {
+        border-radius: 10px;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+    }
+    .form-control:focus {
+        border-color: #11998e;
+        box-shadow: 0 0 0 3px rgba(17, 153, 142, 0.1);
+    }
+    .btn-register {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 12px;
+        font-weight: 600;
+    }
+    .btn-register:hover {
+        opacity: 0.9;
+    }
+    .input-icon {
+        position: relative;
+    }
+    .input-icon i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #11998e;
+    }
+    .input-icon input {
+        padding-left: 40px;
+    }
+    .role-select {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    .role-option {
+        flex: 1;
+        padding: 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.3s;
+    }
+    .role-option:hover {
+        border-color: #11998e;
+    }
+    .role-option.selected {
+        border-color: #11998e;
+        background-color: rgba(17, 153, 142, 0.1);
+    }
+    .role-option input {
+        display: none;
+    }
+    .role-icon {
+        font-size: 2rem;
+        margin-bottom: 5px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow">
-            <div class="card-body">
-                <h3 class="card-title text-center mb-4">注册</h3>
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label class="form-label">用户名</label>
-                        <input type="text" name="username" class="form-control" required>
+<div class="register-container d-flex align-items-center justify-content-center py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card register-card">
+                    <div class="register-header text-center text-white">
+                        <i class="bi bi-calendar-plus fs-1 mb-3"></i>
+                        <h3>用户注册</h3>
+                        <p class="mb-0">加入体育场所预订系统</p>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">邮箱</label>
-                        <input type="email" name="email" class="form-control">
+                    <div class="card-body p-4">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">选择账户类型</label>
+                                <div class="role-select">
+                                    <label class="role-option" id="role-user">
+                                        <input type="radio" name="user_type" value="user" checked>
+                                        <div class="role-icon">👤</div>
+                                        <div class="fw-bold">普通用户</div>
+                                        <div class="small text-muted">预约场地</div>
+                                    </label>
+                                    <label class="role-option" id="role-admin">
+                                        <input type="radio" name="user_type" value="admin">
+                                        <div class="role-icon">👨‍💼</div>
+                                        <div class="fw-bold">管理员</div>
+                                        <div class="small text-muted">系统管理</div>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="mb-3 input-icon">
+                                <i class="bi bi-person-fill"></i>
+                                <input type="text" name="username" class="form-control" placeholder="请输入用户名（必填）" required>
+                            </div>
+                            <div class="mb-3 input-icon">
+                                <i class="bi bi-envelope-fill"></i>
+                                <input type="email" name="email" class="form-control" placeholder="请输入邮箱（选填）">
+                            </div>
+                            <div class="mb-3 input-icon">
+                                <i class="bi bi-phone-fill"></i>
+                                <input type="text" name="phone" class="form-control" placeholder="请输入手机号（选填）">
+                            </div>
+                            <div class="mb-3 input-icon">
+                                <i class="bi bi-lock-fill"></i>
+                                <input type="password" name="password1" class="form-control" placeholder="请输入密码（至少6位）" required minlength="6">
+                            </div>
+                            <div class="mb-3 input-icon">
+                                <i class="bi bi-lock-fill"></i>
+                                <input type="password" name="password2" class="form-control" placeholder="请再次输入密码" required>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="agree" required>
+                                <label class="form-check-label" for="agree">
+                                    我同意<a href="#">服务条款</a>和<a href="#">隐私政策</a>
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-success btn-register w-100 text-white">
+                                <i class="bi bi-person-plus me-2"></i>注 册
+                            </button>
+                        </form>
+                        <hr class="my-4">
+                        <div class="text-center">
+                            <p class="mb-0">已有账号？ <a href="{% url 'users:login' %}">立即登录</a></p>
+                        </div>
+                        <div class="mt-4 p-3 bg-light rounded">
+                            <div class="small text-muted">
+                                <ul class="mb-0 ps-3">
+                                    <li>普通用户注册后可直接登录预约场地</li>
+                                    <li>管理员账号需由系统管理员分配</li>
+                                    <li>请保管好您的账户信息</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">手机号</label>
-                        <input type="text" name="phone" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">密码</label>
-                        <input type="password" name="password1" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">确认密码</label>
-                        <input type="password" name="password2" class="form-control" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">注册</button>
-                </form>
-                <div class="text-center mt-3">
-                    <p>已有账号？ <a href="{% url 'users:login' %}">立即登录</a></p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.querySelectorAll('.role-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.role-option').forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+            this.querySelector('input').checked = true;
+        });
+    });
+    document.getElementById('role-user').classList.add('selected');
+</script>
 {% endblock %}

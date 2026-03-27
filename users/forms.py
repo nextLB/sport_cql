@@ -12,10 +12,15 @@ class UserRegistrationForm(UserCreationForm):
         'class': 'form-control',
         'placeholder': '手机号'
     }))
+    user_type = forms.ChoiceField(
+        choices=User.USER_TYPE_CHOICES,
+        initial='user',
+        widget=forms.HiddenInput()
+    )
     
     class Meta:
         model = User
-        fields = ('username', 'email', 'phone', 'password1', 'password2')
+        fields = ('username', 'email', 'phone', 'password1', 'password2', 'user_type')
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -36,6 +41,9 @@ class UserRegistrationForm(UserCreationForm):
         user = super().save(commit=False)
         user.email = self.cleaned_data.get('email', '')
         user.phone = self.cleaned_data.get('phone', '')
+        user.user_type = self.cleaned_data.get('user_type', 'user')
+        if user.user_type == 'admin':
+            user.is_staff = True
         if commit:
             user.save()
         return user

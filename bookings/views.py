@@ -33,7 +33,7 @@ def booking_create(request, field_id):
             
             booking.save()
             messages.success(request, '预约成功！请等待审批')
-            return redirect('my_bookings')
+            return redirect('bookings:my_bookings')
     else:
         form = BookingForm()
     
@@ -61,13 +61,22 @@ def my_bookings(request):
     if status:
         bookings = bookings.filter(status=status)
     
+    counts = {
+        'all': Booking.objects.filter(user=request.user).count(),
+        'pending': Booking.objects.filter(user=request.user, status='pending').count(),
+        'confirmed': Booking.objects.filter(user=request.user, status='confirmed').count(),
+        'completed': Booking.objects.filter(user=request.user, status='completed').count(),
+        'cancelled': Booking.objects.filter(user=request.user, status='cancelled').count(),
+    }
+    
     paginator = Paginator(bookings, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
     return render(request, 'bookings/my_bookings.html', {
         'page_obj': page_obj,
-        'status': status
+        'status': status,
+        'counts': counts
     })
 
 
@@ -80,7 +89,7 @@ def booking_cancel(request, booking_id):
         messages.success(request, '预约已取消')
     else:
         messages.error(request, '该预约无法取消')
-    return redirect('my_bookings')
+    return redirect('bookings:my_bookings')
 
 
 @login_required
@@ -98,13 +107,23 @@ def booking_manage(request):
     if status:
         bookings = bookings.filter(status=status)
     
+    counts = {
+        'all': Booking.objects.count(),
+        'pending': Booking.objects.filter(status='pending').count(),
+        'confirmed': Booking.objects.filter(status='confirmed').count(),
+        'completed': Booking.objects.filter(status='completed').count(),
+        'cancelled': Booking.objects.filter(status='cancelled').count(),
+        'rejected': Booking.objects.filter(status='rejected').count(),
+    }
+    
     paginator = Paginator(bookings, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
     return render(request, 'bookings/booking_manage.html', {
         'page_obj': page_obj,
-        'status': status
+        'status': status,
+        'counts': counts
     })
 
 
@@ -121,7 +140,7 @@ def booking_approve(request, booking_id):
         messages.success(request, f'预约 {booking.id} 已拒绝')
     
     booking.save()
-    return redirect('booking_manage')
+    return redirect('bookings:booking_manage')
 
 
 @user_passes_test(lambda u: u.is_staff or u.user_type == 'admin')
@@ -132,7 +151,7 @@ def booking_edit(request, booking_id):
         if form.is_valid():
             form.save()
             messages.success(request, '预约更新成功')
-            return redirect('booking_manage')
+            return redirect('bookings:booking_manage')
     else:
         form = BookingForm(instance=booking)
     return render(request, 'bookings/booking_form.html', {
@@ -146,7 +165,7 @@ def booking_delete(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
     booking.delete()
     messages.success(request, '预约已删除')
-    return redirect('booking_manage')
+    return redirect('bookings:booking_manage')
 
 
 @login_required
@@ -155,11 +174,11 @@ def booking_review(request, booking_id):
     
     if booking.status != 'completed':
         messages.error(request, '只能评价已完成的预约')
-        return redirect('my_bookings')
+        return redirect('bookings:my_bookings')
     
     if hasattr(booking, 'review'):
         messages.error(request, '该预约已评价')
-        return redirect('my_bookings')
+        return redirect('bookings:my_bookings')
     
     if request.method == 'POST':
         form = BookingReviewForm(request.POST)
@@ -168,7 +187,7 @@ def booking_review(request, booking_id):
             review.booking = booking
             review.save()
             messages.success(request, '评价成功')
-            return redirect('my_bookings')
+            return redirect('bookings:my_bookings')
     else:
         form = BookingReviewForm()
     
