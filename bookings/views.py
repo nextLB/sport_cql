@@ -34,7 +34,7 @@ def booking_create(request):
     space_id = request.GET.get('space_id')
     if not space_id:
         messages.error(request, '请选择要预约的场地。')
-        return redirect('venue_list')
+        return redirect('venues:venue_list')
     
     space = get_object_or_404(VenueSpace, pk=space_id)
     
@@ -68,7 +68,7 @@ def booking_create(request):
             )
             booking.save()
             messages.success(request, '预约提交成功！请等待审批。')
-            return redirect('my_bookings')
+            return redirect('bookings:my_bookings')
     else:
         form = BookingCreateForm(space_id=space_id)
     
@@ -81,13 +81,13 @@ def booking_cancel(request, pk):
     
     if not booking.can_cancel:
         messages.error(request, '该状态无法取消预约。')
-        return redirect('my_bookings')
+        return redirect('bookings:my_bookings')
     
     if request.method == 'POST':
         booking.status = 'cancelled'
         booking.save()
         messages.success(request, '预约取消成功！')
-        return redirect('my_bookings')
+        return redirect('bookings:my_bookings')
     
     return render(request, 'bookings/booking_cancel.html', {'booking': booking})
 
@@ -98,7 +98,7 @@ def booking_rate(request, pk):
     
     if not booking.can_rate:
         messages.error(request, '该预约无法评价。')
-        return redirect('my_bookings')
+        return redirect('bookings:my_bookings')
     
     if request.method == 'POST':
         form = BookingRatingForm(request.POST)
@@ -107,7 +107,7 @@ def booking_rate(request, pk):
             rating.booking = booking
             rating.save()
             messages.success(request, '评价提交成功！感谢您的反馈。')
-            return redirect('my_bookings')
+            return redirect('bookings:my_bookings')
     else:
         form = BookingRatingForm()
     
@@ -159,7 +159,7 @@ def booking_confirm(request, pk):
         booking.status = 'confirmed'
         booking.save()
         messages.success(request, '预约已确认！')
-        return redirect('booking_manage')
+        return redirect('bookings:booking_manage')
     
     return render(request, 'bookings/booking_confirm.html', {'booking': booking})
 
@@ -178,7 +178,7 @@ def booking_reject(request, pk):
         booking.reject_reason = reject_reason
         booking.save()
         messages.success(request, '预约已拒绝！')
-        return redirect('booking_manage')
+        return redirect('bookings:booking_manage')
     
     return render(request, 'bookings/booking_reject.html', {'booking': booking})
 
@@ -212,7 +212,7 @@ def booking_edit(request, pk):
                 booking.contact_phone = new_phone
                 booking.save()
                 messages.success(request, '预约信息更新成功！')
-                return redirect('booking_manage')
+                return redirect('bookings:booking_manage')
     
     return render(request, 'bookings/booking_edit.html', {'booking': booking})
 
@@ -228,6 +228,6 @@ def booking_delete(request, pk):
     if request.method == 'POST':
         booking.delete()
         messages.success(request, '预约删除成功！')
-        return redirect('booking_manage')
+        return redirect('bookings:booking_manage')
     
     return render(request, 'bookings/booking_confirm_delete.html', {'booking': booking})

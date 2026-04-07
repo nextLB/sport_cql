@@ -22,10 +22,10 @@ class BookingForm(forms.ModelForm):
 class BookingCreateForm(forms.Form):
     space_id = forms.IntegerField(widget=forms.HiddenInput())
     booking_date = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control', 'min': datetime.now().strftime('%Y-%m-%d')})
     )
     time_slot = forms.ChoiceField(
-        choices=[],
+        choices=[(f'{h:02d}:00-{h+1:02d}:00', f'{h:02d}:00-{h+1:02d}:00') for h in range(9, 22)],
         widget=forms.Select(attrs={'class': 'form-select'})
     )
     contact_phone = forms.CharField(

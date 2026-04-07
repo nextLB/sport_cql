@@ -67,7 +67,7 @@ def venue_create(request):
             else:
                 form.save()
                 messages.success(request, '场馆添加成功！')
-                return redirect('venue_list')
+                return redirect('venues:venue_list')
     else:
         form = VenueForm()
     return render(request, 'venues/venue_form.html', {'form': form, 'action': '添加'})
@@ -90,7 +90,7 @@ def venue_edit(request, pk):
             else:
                 form.save()
                 messages.success(request, '场馆信息更新成功！')
-                return redirect('venue_list')
+                return redirect('venues:venue_list')
     else:
         form = VenueForm(instance=venue)
     return render(request, 'venues/venue_form.html', {'form': form, 'action': '编辑'})
@@ -109,7 +109,7 @@ def venue_delete(request, pk):
             return redirect('venue_edit', pk=pk)
         venue.delete()
         messages.success(request, '场馆删除成功！')
-        return redirect('venue_list')
+        return redirect('venues:venue_list')
     return render(request, 'venues/venue_confirm_delete.html', {'venue': venue})
 
 
@@ -154,7 +154,7 @@ def venue_space_create(request):
             else:
                 form.save()
                 messages.success(request, '场地添加成功！')
-                return redirect('space_list')
+                return redirect('venues:space_list')
     else:
         form = VenueSpaceForm()
     return render(request, 'venues/space_form.html', {'form': form, 'action': '添加'})
@@ -180,7 +180,7 @@ def venue_space_edit(request, pk):
             else:
                 form.save()
                 messages.success(request, '场地信息更新成功！')
-                return redirect('space_list')
+                return redirect('venues:space_list')
     else:
         form = VenueSpaceForm(instance=space)
     return render(request, 'venues/space_form.html', {'form': form, 'action': '编辑'})
@@ -196,7 +196,7 @@ def venue_space_delete(request, pk):
     if request.method == 'POST':
         space.delete()
         messages.success(request, '场地删除成功！')
-        return redirect('space_list')
+        return redirect('venues:space_list')
     return render(request, 'venues/space_confirm_delete.html', {'space': space})
 
 
