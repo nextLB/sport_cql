@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}首页 - 体育场所预订系统{% endblock %}
+
+{% block content %}
+<div class="p-5 mb-4 bg-light rounded-3">
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold">欢迎使用体育场所预订系统</h1>
+        <p class="col-md-8 fs-4">便捷的在线场地预订服务，让您随时随地预订心仪的体育场馆。</p>
+        {% if not user.is_authenticated %}
+        <a href="{% url 'users:register' %}" class="btn btn-primary btn-lg" type="button">立即注册</a>
+        <a href="{% url 'venues:venue_list' %}" class="btn btn-outline-primary btn-lg" type="button">浏览场馆</a>
+        {% else %}
+        <a href="{% url 'venues:venue_list' %}" class="btn btn-primary btn-lg" type="button">浏览场馆</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="bi bi-building fs-1 text-primary"></i>
+                <h5 class="card-title mt-2">场馆数量</h5>
+                <p class="card-text fs-3 fw-bold">{{ venue_count }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="bi bi-calendar-check fs-1 text-success"></i>
+                <h5 class="card-title mt-2">可用场地</h5>
+                <p class="card-text fs-3 fw-bold">{{ space_count }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="bi bi-clock-history fs-1 text-info"></i>
+                <h5 class="card-title mt-2">随时预订</h5>
+                <p class="card-text text-muted">7×24小时服务</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="mb-3">热门场馆</h2>
+<div class="row">
+    {% for venue in venues %}
+    <div class="col-md-4">
+        <div class="card venue-card">
+            {% if venue.image %}
+            <img src="{{ venue.image.url }}" class="card-img-top" alt="{{ venue.name }}" style="height: 200px; object-fit: cover;">
+            {% else %}
+            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                <i class="bi bi-building fs-1 text-white"></i>
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ venue.name }}</h5>
+                <p class="card-text text-muted">
+                    <i class="bi bi-geo-alt"></i> {{ venue.address }}
+                </p>
+                <p class="card-text">
+                    <span class="badge bg-primary">{{ venue.get_venue_type_display }}</span>
+                    <span class="badge bg-{{ venue.status|default:'success'|default:'success' }}">
+                        {{ venue.get_status_display }}
+                    </span>
+                </p>
+                <a href="{% url 'venues:venue_detail' venue.pk %}" class="btn btn-sm btn-outline-primary">查看详情</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <p class="text-center text-muted">暂无场馆信息</p>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="text-center mt-4">
+    <a href="{% url 'venues:venue_list' %}" class="btn btn-link">查看更多场馆 &rarr;</a>
+</div>
+{% endblock %}

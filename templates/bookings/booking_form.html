@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}预约场地 - 体育场所预订系统{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="bi bi-calendar-plus"></i> 预约场地</h4>
+            </div>
+            <div class="card-body">
+                <h5>{{ space.venue.name }} - {{ space.name }}</h5>
+                <p class="text-muted">
+                    <i class="bi bi-people"></i> 容纳{{ space.capacity }}人 | 
+                    <i class="bi bi-currency-dollar"></i> {{ space.price }}元/小时
+                </p>
+                <hr>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="space_id" value="{{ space.pk }}">
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.booking_date.label }}</label>
+                        {{ form.booking_date }}
+                        {% if form.booking_date.errors %}
+                        <div class="text-danger small">{{ form.booking_date.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.time_slot.label }}</label>
+                        {{ form.time_slot }}
+                        {% if form.time_slot.errors %}
+                        <div class="text-danger small">{{ form.time_slot.errors.0 }}</div>
+                        {% endif %}
+                        <div id="timeSlots" class="mt-2"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.contact_phone.label }}</label>
+                        {{ form.contact_phone }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.remark.label }}</label>
+                        {{ form.remark }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">提交预约</button>
+                    <a href="{% url 'venues:venue_detail' space.venue.pk %}" class="btn btn-secondary">返回</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelector('input[name="booking_date"]').addEventListener('change', function() {
+    const date = this.value;
+    const spaceId = {{ space.pk }};
+    
+    if (date) {
+        fetch(`/venues/get-available-times/?space_id=${spaceId}&date=${date}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+                const select = document.querySelector('select[name="time_slot"]');
+                select.innerHTML = '';
+                data.times.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.time;
+                    option.textContent = item.time + (item.available ? '' : ' (已占用)');
+                    option.disabled = !item.available;
+                    select.appendChild(option);
+                });
+            });
+    }
+});
+</script>
+{% endblock %}

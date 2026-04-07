@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}拒绝预约 - 体育场所预订系统{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0"><i class="bi bi-x-circle"></i> 拒绝预约</h4>
+            </div>
+            <div class="card-body">
+                <p>确定要拒绝以下预约吗？</p>
+                <div class="border rounded p-3 mb-3">
+                    <p><strong>用户：</strong>{{ booking.user.username }}</p>
+                    <p><strong>场地：</strong>{{ booking.space.venue.name }} - {{ booking.space.name }}</p>
+                    <p><strong>日期：</strong>{{ booking.booking_date }}</p>
+                    <p><strong>时间：</strong>{{ booking.time_slot }}</p>
+                </div>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">拒绝理由</label>
+                        <textarea name="reject_reason" class="form-control" rows="3" placeholder="请输入拒绝理由"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-danger">确认拒绝</button>
+                    <a href="{% url 'bookings:booking_manage' %}" class="btn btn-secondary">返回</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

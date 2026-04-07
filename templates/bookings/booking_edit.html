@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}编辑预约 - 体育场所预订系统{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="bi bi-pencil"></i> 编辑预约</h4>
+            </div>
+            <div class="card-body">
+                <div class="border rounded p-3 mb-3">
+                    <p><strong>用户：</strong>{{ booking.user.username }}</p>
+                    <p><strong>场地：</strong>{{ booking.space.venue.name }} - {{ booking.space.name }}</p>
+                </div>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">预约日期</label>
+                        <input type="date" name="booking_date" class="form-control" value="{{ booking.booking_date|date:'Y-m-d' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">时间段</label>
+                        <input type="text" name="time_slot" class="form-control" value="{{ booking.time_slot }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">联系电话</label>
+                        <input type="text" name="contact_phone" class="form-control" value="{{ booking.contact_phone }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                    <a href="{% url 'bookings:booking_manage' %}" class="btn btn-secondary">返回</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

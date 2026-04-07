@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}场馆列表 - 体育场所预订系统{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h4 class="mb-0"><i class="bi bi-building"></i> 场馆列表</h4>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3 mb-3">
+            <div class="col-md-3">
+                <select name="type" class="form-select">
+                    <option value="">全部类型</option>
+                    {% for value, label in venue_types %}
+                    <option value="{{ value }}" {% if current_type == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-5">
+                <input type="text" name="keyword" class="form-control" placeholder="搜索场馆名称或地址" value="{{ keyword }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">搜索</button>
+            </div>
+            <div class="col-md-2">
+                <a href="{% url 'venues:venue_list' %}" class="btn btn-outline-secondary w-100">重置</a>
+            </div>
+        </form>
+        
+        <div class="row">
+            {% for venue in venues %}
+            <div class="col-md-4">
+                <div class="card venue-card">
+                    {% if venue.image %}
+                    <img src="{{ venue.image.url }}" class="card-img-top" alt="{{ venue.name }}" style="height: 180px; object-fit: cover;">
+                    {% else %}
+                    <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 180px;">
+                        <i class="bi bi-building fs-1 text-white"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ venue.name }}</h5>
+                        <p class="card-text text-muted small">
+                            <i class="bi bi-geo-alt"></i> {{ venue.address }}
+                        </p>
+                        <p class="card-text">
+                            <span class="badge bg-primary">{{ venue.get_venue_type_display }}</span>
+                            <span class="badge bg-success">{{ venue.get_status_display }}</span>
+                        </p>
+                        <p class="card-text text-muted small">
+                            <i class="bi bi-clock"></i> {{ venue.opening_hours }}
+                        </p>
+                        <a href="{% url 'venues:venue_detail' venue.pk %}" class="btn btn-sm btn-outline-primary">查看详情</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p class="text-center text-muted py-5">暂无相关场馆</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if page_obj.has_other_pages %}
+        <nav>
+            <ul class="pagination justify-content-center mt-4">
+                {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page=1">首页</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">上一页</a></li>
+                {% endif %}
+                <li class="page-item active"><span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
+                {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">下一页</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">末页</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

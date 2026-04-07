@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ action }}场地 - 体育场所预订系统{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="bi bi-list-check"></i> {{ action }}场地</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.venue.label }}</label>
+                        {{ form.venue }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.name.label }}</label>
+                        {{ form.name }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.space_type.label }}</label>
+                        {{ form.space_type }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.capacity.label }}</label>
+                        {{ form.capacity }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.price.label }}</label>
+                        {{ form.price }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.description.label }}</label>
+                        {{ form.description }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.status.label }}</label>
+                        {{ form.status }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                    <a href="{% url 'venues:space_list' %}" class="btn btn-secondary">返回</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

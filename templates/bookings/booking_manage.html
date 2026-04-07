@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}预约管理 - 体育场所预订系统{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h4 class="mb-0"><i class="bi bi-clipboard-data"></i> 预约管理</h4>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3 mb-3">
+            <div class="col-md-3">
+                <select name="status" class="form-select">
+                    <option value="">全部状态</option>
+                    {% for value, label in bookings.model.STATUS_CHOICES %}
+                    <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="venue" class="form-select">
+                    <option value="">全部场馆</option>
+                    {% for v in venues %}
+                    <option value="{{ v.pk }}" {% if request.GET.venue == v.pk %}selected{% endif %}>{{ v.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">筛选</button>
+            </div>
+        </form>
+        
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>用户</th>
+                        <th>场地</th>
+                        <th>日期</th>
+                        <th>时间段</th>
+                        <th>联系电话</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td>{{ booking.user.username }}</td>
+                        <td>{{ booking.space.venue.name }} - {{ booking.space.name }}</td>
+                        <td>{{ booking.booking_date }}</td>
+                        <td>{{ booking.time_slot }}</td>
+                        <td>{{ booking.contact_phone }}</td>
+                        <td>
+                            {% if booking.status == 'pending' %}
+                            <span class="badge bg-warning">待审批</span>
+                            {% elif booking.status == 'confirmed' %}
+                            <span class="badge bg-success">已确认</span>
+                            {% elif booking.status == 'rejected' %}
+                            <span class="badge bg-danger">已拒绝</span>
+                            {% elif booking.status == 'cancelled' %}
+                            <span class="badge bg-secondary">已取消</span>
+                            {% elif booking.status == 'completed' %}
+                            <span class="badge bg-info">已完成</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if booking.status == 'pending' %}
+                            <a href="{% url 'bookings:booking_confirm' booking.pk %}" class="btn btn-sm btn-success">确认</a>
+                            <a href="{% url 'bookings:booking_reject' booking.pk %}" class="btn btn-sm btn-danger">拒绝</a>
+                            {% endif %}
+                            <a href="{% url 'bookings:booking_edit' booking.pk %}" class="btn btn-sm btn-outline-primary">编辑</a>
+                            <a href="{% url 'bookings:booking_delete' booking.pk %}" class="btn btn-sm btn-outline-danger">删除</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">暂无预约数据</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if page_obj.has_other_pages %}
+        <nav>
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">上一页</a></li>
+                {% endif %}
+                <li class="page-item active"><span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
+                {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">下一页</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
