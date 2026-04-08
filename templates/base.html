@@ -36,6 +36,23 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'bookings:my_bookings' %}">我的预约</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'courses:course_list' %}">训练课程</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'courses:my_enrollments' %}">我的报名</a>
+                    </li>
+                    {% if user.role == 'coach' %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="coachDropdown" role="button" data-bs-toggle="dropdown">
+                            教练管理
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="coachDropdown">
+                            <li><a class="dropdown-item" href="{% url 'courses:my_courses' %}">我的课程</a></li>
+                            <li><a class="dropdown-item" href="{% url 'courses:enrollment_manage' %}">报名管理</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
                     {% if user.is_staff %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">

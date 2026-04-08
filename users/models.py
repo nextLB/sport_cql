@@ -5,6 +5,7 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     ROLE_CHOICES = [
         ('user', '普通用户'),
+        ('coach', '教练'),
         ('admin', '管理员'),
     ]
     

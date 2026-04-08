@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}我的课程 - 体育场所预订系统{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="bi bi-calendar-check"></i> 我的课程</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <a href="{% url 'courses:course_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> 创建新课程
+        </a>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>课程名称</th>
+                <th>运动类型</th>
+                <th>场地</th>
+                <th>日期</th>
+                <th>时间</th>
+                <th>人数</th>
+                <th>价格</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in courses %}
+            <tr>
+                <td>{{ course.course_name }}</td>
+                <td>{{ course.get_sport_type_display }}</td>
+                <td>{{ course.venue_space }}</td>
+                <td>{{ course.start_date }} ~ {{ course.end_date }}</td>
+                <td>{{ course.start_time }} - {{ course.end_time }}</td>
+                <td>{{ course.current_participants }}/{{ course.max_participants }}</td>
+                <td>¥{{ course.price }}</td>
+                <td>
+                    <span class="badge bg-{% if course.status == 'open' %}success{% elif course.status == 'full' %}warning{% elif course.status == 'ongoing' %}info{% else %}secondary{% endif %}">
+                        {{ course.get_status_display }}
+                    </span>
+                </td>
+                <td>
+                    <a href="{% url 'courses:course_edit' course.pk %}" class="btn btn-sm btn-outline-primary">编辑</a>
+                    <a href="{% url 'courses:course_delete' course.pk %}" class="btn btn-sm btn-outline-danger">删除</a>
+                    <a href="{% url 'courses:enrollment_manage' %}?course={{ course.pk }}" class="btn btn-sm btn-outline-info">报名管理</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="9" class="text-center">暂无课程</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if paginator %}
+<nav>
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page=1">首页</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">上一页</a></li>
+        {% endif %}
+        <li class="page-item active"><span class="page-link">第 {{ page_obj.number }} / {{ page_obj.paginator.num_pages }} 页</span></li>
+        {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">下一页</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">末页</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

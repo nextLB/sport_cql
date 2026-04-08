@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}课程列表 - 体育场所预订系统{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="bi bi-calendar-event"></i> 训练课程</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                {{ filter_form.sport_type }}
+            </div>
+            <div class="col-md-3">
+                {{ filter_form.status }}
+            </div>
+            <div class="col-md-4">
+                {{ filter_form.keyword }}
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">搜索</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    {% for course in courses %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ course.course_name }}</h5>
+                <p class="card-text text-muted">{{ course.description|truncatewords:20 }}</p>
+                <ul class="list-unstyled">
+                    <li><i class="bi bi-person"></i> 教练: {{ course.coach.username }}</li>
+                    <li><i class="bi bi-geo-alt"></i> 场地: {{ course.venue_space }}</li>
+                    <li><i class="bi bi-calendar"></i> 日期: {{ course.start_date }} ~ {{ course.end_date }}</li>
+                    <li><i class="bi bi-clock"></i> 时间: {{ course.start_time }} - {{ course.end_time }}</li>
+                    <li><i class="bi bi-currency-dollar"></i> 价格: ¥{{ course.price }}</li>
+                    <li><i class="bi bi-people"></i> 人数: {{ course.current_participants }}/{{ course.max_participants }}</li>
+                </ul>
+                <span class="badge bg-{% if course.status == 'open' %}success{% elif course.status == 'full' %}warning{% elif course.status == 'ongoing' %}info{% else %}secondary{% endif %}">
+                    {{ course.get_status_display }}
+                </span>
+            </div>
+            <div class="card-footer">
+                {% if course.status == 'open' or course.status == 'full' %}
+                    {% if request.user.is_authenticated and request.user != course.coach %}
+                        <a href="{% url 'courses:course_enroll' course.pk %}" class="btn btn-sm btn-primary">报名</a>
+                    {% elif not request.user.is_authenticated %}
+                        <a href="{% url 'users:login' %}" class="btn btn-sm btn-primary">登录报名</a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">暂无课程</div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if paginator %}
+<nav>
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page=1">首页</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">上一页</a></li>
+        {% endif %}
+        <li class="page-item active"><span class="page-link">第 {{ page_obj.number }} / {{ page_obj.paginator.num_pages }} 页</span></li>
+        {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">下一页</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">末页</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

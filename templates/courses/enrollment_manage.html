@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}报名管理 - 体育场所预订系统{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="bi bi-people"></i> 报名管理</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <select name="course" class="form-select">
+                    <option value="">全部课程</option>
+                    {% for course in courses %}
+                    <option value="{{ course.pk }}">{{ course.course_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="status" class="form-select">
+                    <option value="">全部状态</option>
+                    <option value="pending">待审批</option>
+                    <option value="confirmed">已确认</option>
+                    <option value="cancelled">已取消</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">筛选</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>课程</th>
+                <th>学员</th>
+                <th>报名时间</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for enrollment in enrollments %}
+            <tr>
+                <td>{{ enrollment.course.course_name }}</td>
+                <td>{{ enrollment.user.username }}</td>
+                <td>{{ enrollment.created_at }}</td>
+                <td>
+                    <span class="badge bg-{% if enrollment.status == 'pending' %}warning{% elif enrollment.status == 'confirmed' %}success{% else %}secondary{% endif %}">
+                        {% if enrollment.status == 'pending' %}待审批{% elif enrollment.status == 'confirmed' %}已确认{% else %}已取消{% endif %}
+                    </span>
+                </td>
+                <td>
+                    {% if enrollment.status == 'pending' %}
+                    <a href="{% url 'courses:enrollment_confirm' enrollment.pk %}" class="btn btn-sm btn-outline-primary">审批</a>
+                    {% else %}
+                    <span class="text-muted">-</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">暂无报名记录</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if paginator %}
+<nav>
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page=1">首页</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">上一页</a></li>
+        {% endif %}
+        <li class="page-item active"><span class="page-link">第 {{ page_obj.number }} / {{ page_obj.paginator.num_pages }} 页</span></li>
+        {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">下一页</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">末页</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

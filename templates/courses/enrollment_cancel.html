@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}取消报名 - 体育场所预订系统{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <div class="card">
+            <div class="card-header bg-warning">
+                <h4><i class="bi bi-exclamation-triangle"></i> 取消报名</h4>
+            </div>
+            <div class="card-body">
+                <p>确定要取消课程 <strong>{{ enrollment.course.course_name }}</strong> 的报名吗？</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-danger">确认取消</button>
+                        <a href="{% url 'courses:my_enrollments' %}" class="btn btn-secondary">返回</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

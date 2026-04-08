@@ -15,10 +15,16 @@ class UserRegisterForm(UserCreationForm):
         required=False,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '请输入手机号'})
     )
+    role = forms.ChoiceField(
+        label='注册身份',
+        choices=User.ROLE_CHOICES,
+        initial='user',
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
     
     class Meta:
         model = User
-        fields = ['username', 'email', 'phone', 'password1', 'password2']
+        fields = ['username', 'email', 'phone', 'role', 'password1', 'password2']
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

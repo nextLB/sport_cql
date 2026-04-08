@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'users',
     'venues',
     'bookings',
+    'courses',
 ]
 
 AUTH_USER_MODEL = 'users.User'
