@@ -95,6 +95,17 @@
                     <div class="card-body p-4">
                         <form method="post">
                             {% csrf_token %}
+                            {% if form.errors %}
+                            <div class="alert alert-danger">
+                                <ul class="mb-0">
+                                {% for field, errors in form.errors.items %}
+                                    {% for error in errors %}
+                                    <li>{{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                                </ul>
+                            </div>
+                            {% endif %}
                             <div class="mb-3">
                                 <label class="form-label fw-bold">选择账户类型</label>
                                 <div class="role-select">

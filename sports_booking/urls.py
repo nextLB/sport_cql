@@ -13,7 +13,7 @@ urlpatterns = [
     path('users/', include('users.urls', namespace='users')),
     path('venues/', include('venues.urls', namespace='venues')),
     path('bookings/', include('bookings.urls', namespace='bookings')),
-    path('', include('django.contrib.auth.urls')),
+    path('courses/', include('courses.urls', namespace='courses')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
