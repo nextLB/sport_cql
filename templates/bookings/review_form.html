@@ -2,27 +2,93 @@
 
 {% block title %}评价预约 - 体育场所预订系统{% endblock %}
 
+{% block extra_css %}
+<style>
+    .review-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    .review-header {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        padding: 25px;
+        color: white;
+    }
+    .star-rating { direction: rtl; display: inline-block; }
+    .star-rating input { display: none; }
+    .star-rating label {
+        font-size: 2rem;
+        color: #ddd;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    .star-rating input:checked ~ label,
+    .star-rating label:hover,
+    .star-rating label:hover ~ label { color: #ffd700; }
+    .star-display { color: #ffd700; font-size: 1.5rem; }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">评价预约</h5>
-            </div>
-            <div class="card-body">
-                <div class="alert alert-info">
-                    <strong>预约信息：</strong> {{ booking.field.venue.name }} - {{ booking.field.name }}
-                    <br>
-                    <strong>日期：</strong> {{ booking.booking_date }} {{ booking.start_time }} - {{ booking.end_time }}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'bookings:my_bookings' %}">我的预约</a></li>
+            <li class="breadcrumb-item active">评价预约</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card review-card">
+                <div class="review-header">
+                    <h4 class="mb-1"><i class="bi bi-star-fill me-2"></i>评价预约</h4>
+                    <p class="mb-0">感谢您的使用，请对本次预约进行评价</p>
                 </div>
-                <form method="post">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit" class="btn btn-primary">提交评价</button>
-                    <a href="{% url 'bookings:my_bookings' %}" class="btn btn-secondary">取消</a>
-                </form>
+                <div class="card-body p-4">
+                    <div class="alert alert-light border mb-4">
+                        <div class="row">
+                            <div class="col-6"><strong>场馆：</strong>{{ booking.field.venue.name }}</div>
+                            <div class="col-6"><strong>场地：</strong>{{ booking.field.name }}</div>
+                            <div class="col-6"><strong>日期：</strong>{{ booking.booking_date }}</div>
+                            <div class="col-6"><strong>时间：</strong>{{ booking.start_time }} - {{ booking.end_time }}</div>
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-4 text-center">
+                            <label class="form-label fw-bold d-block mb-3">评分</label>
+                            <div class="star-rating">
+                                {% for i in "54321"|make_list %}
+                                <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" {% if forloop.counter == 5 %}checked{% endif %}>
+                                <label for="star{{ i }}" title="{{ i }}星">&#9733;</label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">评价内容</label>
+                            <textarea name="comment" class="form-control" rows="5" placeholder="请分享您的使用体验，如场地设施、环境卫生、服务质量等..."></textarea>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger btn-lg"><i class="bi bi-send me-2"></i>提交评价</button>
+                            <a href="{% url 'bookings:my_bookings' %}" class="btn btn-outline-secondary">返回</a>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.star-rating label').forEach(label => {
+    label.addEventListener('mouseenter', () => { label.style.transform = 'scale(1.2)'; });
+    label.addEventListener('mouseleave', () => { label.style.transform = 'scale(1)'; });
+});
+</script>
 {% endblock %}

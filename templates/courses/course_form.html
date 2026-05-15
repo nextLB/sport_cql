@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if form.instance.pk %}编辑{% else %}创建{% endif %}课程 - 体育场所预订系统{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'courses:course_list' %}">培训课程</a></li>
+            <li class="breadcrumb-item active">{% if form.instance.pk %}编辑课程{% else %}创建课程{% endif %}</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">{% if form.instance.pk %}编辑课程{% else %}创建课程{% endif %}</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">课程名称</label>
+                                {{ form.name }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">课程类型</label>
+                                {{ form.course_type }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">授课教练</label>
+                                {{ form.coach }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">上课场馆</label>
+                                {{ form.venue }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">课程价格</label>
+                                {{ form.price }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">最大人数</label>
+                                {{ form.max_students }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">状态</label>
+                                {{ form.status }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">开课日期</label>
+                                {{ form.start_date }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">结课日期</label>
+                                {{ form.end_date }}
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label">上课时间</label>
+                                {{ form.schedule }}
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label">课程描述</label>
+                                {{ form.description }}
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle me-1"></i>保存</button>
+                            <a href="{% url 'courses:course_list' %}" class="btn btn-outline-secondary">返回</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

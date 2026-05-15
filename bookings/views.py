@@ -20,7 +20,11 @@ def booking_create(request, field_id):
             booking.user = request.user
             booking.field = field
             
-            hours = (booking.end_time.hour - booking.start_time.hour) + (booking.end_time.minute - booking.start_time.minute) / 60
+            from datetime import datetime
+            from decimal import Decimal
+            start_dt = datetime.combine(booking.booking_date, booking.start_time)
+            end_dt = datetime.combine(booking.booking_date, booking.end_time)
+            hours = Decimal((end_dt - start_dt).total_seconds() / 3600)
             booking.total_price = field.venue.price_per_hour * hours
             
             if not check_field_available(field, booking.booking_date, 
@@ -94,7 +98,10 @@ def booking_cancel(request, booking_id):
 
 @login_required
 def booking_detail(request, booking_id):
-    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    if request.user.is_staff or request.user.user_type == 'admin':
+        booking = get_object_or_404(Booking, id=booking_id)
+    else:
+        booking = get_object_or_404(Booking, id=booking_id, user=request.user)
     return render(request, 'bookings/booking_detail.html', {
         'booking': booking
     })
@@ -102,7 +109,7 @@ def booking_detail(request, booking_id):
 
 @user_passes_test(lambda u: u.is_staff or u.user_type == 'admin')
 def booking_manage(request):
-    bookings = Booking.objects.select_related('user', 'field__venue')
+    bookings = Booking.objects.select_related('user', 'field__venue', 'review')
     status = request.GET.get('status')
     if status:
         bookings = bookings.filter(status=status)
@@ -138,7 +145,10 @@ def booking_approve(request, booking_id):
     elif action == 'reject':
         booking.status = 'rejected'
         messages.success(request, f'预约 {booking.id} 已拒绝')
-    
+    elif action == 'complete':
+        booking.status = 'completed'
+        messages.success(request, f'预约 {booking.id} 已完成')
+
     booking.save()
     return redirect('bookings:booking_manage')
 

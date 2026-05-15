@@ -124,6 +124,7 @@
                                     <label class="form-label">用户类型</label>
                                     <select name="user_type" class="form-select">
                                         <option value="user" {% if edit_user.user_type == 'user' %}selected{% endif %}>👤 普通用户</option>
+                                        <option value="coach" {% if edit_user.user_type == 'coach' %}selected{% endif %}>👨‍🏫 教练</option>
                                         <option value="admin" {% if edit_user.user_type == 'admin' %}selected{% endif %}>👨‍💼 管理员</option>
                                     </select>
                                 </div>

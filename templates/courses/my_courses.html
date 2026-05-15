@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}我的课程 - 体育场所预订系统{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li>
+            <li class="breadcrumb-item active">我的课程</li>
+        </ol>
+    </nav>
+
+    <h3 class="mb-4"><i class="bi bi-journal-bookmark me-2"></i>我的课程</h3>
+
+    {% if page_obj %}
+    <div class="row">
+        {% for enrollment in page_obj %}
+        <div class="col-md-6 mb-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="card-title">{{ enrollment.course.name }}</h5>
+                            <p class="text-muted small mb-1">
+                                <i class="bi bi-person me-1"></i>{{ enrollment.course.coach.name }} 教练
+                            </p>
+                            <p class="text-muted small mb-1">
+                                <i class="bi bi-geo-alt me-1"></i>{{ enrollment.course.venue.name }}
+                            </p>
+                            <p class="text-muted small mb-1">
+                                <i class="bi bi-clock me-1"></i>{{ enrollment.course.schedule }}
+                            </p>
+                        </div>
+                        <span class="badge bg-{% if enrollment.status == 'enrolled' %}success{% elif enrollment.status == 'cancelled' %}danger{% else %}secondary{% endif %}">
+                            {{ enrollment.get_status_display }}
+                        </span>
+                    </div>
+                    <div class="mt-2">
+                        <a href="{% url 'courses:course_detail' enrollment.course.id %}" class="btn btn-sm btn-outline-primary">查看详情</a>
+                        {% if enrollment.status == 'enrolled' %}
+                        <a href="{% url 'courses:course_cancel_enroll' enrollment.course.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('确定取消报名？')">取消报名</a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-footer bg-light small text-muted">
+                    报名时间：{{ enrollment.created_at|date:"Y-m-d H:i" }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-journal-x text-muted" style="font-size: 4rem;"></i>
+        <h4 class="text-muted mt-3">还没有报名任何课程</h4>
+        <a href="{% url 'courses:course_list' %}" class="btn btn-primary mt-3">浏览培训课程</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

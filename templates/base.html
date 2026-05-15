@@ -29,13 +29,44 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'venues:venue_list' %}">场馆列表</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'courses:course_list' %}">培训课程</a>
+                    </li>
                     {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'bookings:my_bookings' %}">我的预约</a>
                     </li>
-                    {% if user.user_type == 'admin' or user.is_staff %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'admin_dashboard' %}">管理面板</a>
+                        <a class="nav-link" href="{% url 'courses:my_courses' %}">我的课程</a>
+                    </li>
+                    {% if user.user_type == 'coach' %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            教练管理
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'courses:course_create' %}">创建课程</a></li>
+                            <li><a class="dropdown-item" href="{% url 'courses:course_list' %}?coach={{ user.id }}">我的课程</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                    {% if user.user_type == 'admin' or user.is_staff %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            管理面板
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'admin_dashboard' %}">仪表盘</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'venues:venue_create' %}">添加场馆</a></li>
+                            <li><a class="dropdown-item" href="{% url 'venues:field_create' %}">添加场地</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'bookings:booking_manage' %}">预约管理</a></li>
+                            <li><a class="dropdown-item" href="{% url 'users:user_list' %}">用户管理</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'courses:coach_create' %}">添加教练</a></li>
+                            <li><a class="dropdown-item" href="{% url 'courses:course_create' %}">创建课程</a></li>
+                        </ul>
                     </li>
                     {% endif %}
                     {% endif %}
@@ -50,7 +81,12 @@
                             <li><a class="dropdown-item" href="{% url 'users:profile' %}">个人资料</a></li>
                             <li><a class="dropdown-item" href="{% url 'users:password_change' %}">修改密码</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'users:logout' %}">退出登录</a></li>
+                            <li>
+                                                <form method="post" action="{% url 'users:logout' %}" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="dropdown-item border-0 bg-transparent" style="cursor:pointer;">退出登录</button>
+                                                </form>
+                                            </li>
                         </ul>
                     </li>
                     {% else %}
@@ -81,7 +117,7 @@
 
     <footer class="bg-light py-4 mt-5">
         <div class="container text-center">
-            <p class="text-muted mb-0">体育场所预订系统 &copy; 2024</p>
+            <p class="text-muted mb-0">体育场所预订系统 &copy; 2026</p>
         </div>
     </footer>
 

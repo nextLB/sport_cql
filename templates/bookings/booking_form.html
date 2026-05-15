@@ -170,19 +170,47 @@
                             <div class="mb-4">
                                 <label class="form-label">选择开始时间</label>
                                 <div id="startTimeSelector">
-                                    {% for hour in "678910111213141516171819202122"|make_list %}
-                                    <div class="time-slot" data-time="{{ hour }}:00">{{ hour }}:00</div>
-                                    {% endfor %}
+                                    <div class="time-slot" data-time="06:00">06:00</div>
+                                    <div class="time-slot" data-time="07:00">07:00</div>
+                                    <div class="time-slot" data-time="08:00">08:00</div>
+                                    <div class="time-slot" data-time="09:00">09:00</div>
+                                    <div class="time-slot" data-time="10:00">10:00</div>
+                                    <div class="time-slot" data-time="11:00">11:00</div>
+                                    <div class="time-slot" data-time="12:00">12:00</div>
+                                    <div class="time-slot" data-time="13:00">13:00</div>
+                                    <div class="time-slot" data-time="14:00">14:00</div>
+                                    <div class="time-slot" data-time="15:00">15:00</div>
+                                    <div class="time-slot" data-time="16:00">16:00</div>
+                                    <div class="time-slot" data-time="17:00">17:00</div>
+                                    <div class="time-slot" data-time="18:00">18:00</div>
+                                    <div class="time-slot" data-time="19:00">19:00</div>
+                                    <div class="time-slot" data-time="20:00">20:00</div>
+                                    <div class="time-slot" data-time="21:00">21:00</div>
+                                    <div class="time-slot" data-time="22:00">22:00</div>
                                 </div>
                                 <input type="time" name="start_time" id="startTime" class="form-control mt-3" required>
                             </div>
-                            
+
                             <div class="mb-4">
                                 <label class="form-label">选择结束时间</label>
                                 <div id="endTimeSelector">
-                                    {% for hour in "7891011121314151617181920212223"|make_list %}
-                                    <div class="time-slot" data-time="{{ hour }}:00">{{ hour }}:00</div>
-                                    {% endfor %}
+                                    <div class="time-slot" data-time="07:00">07:00</div>
+                                    <div class="time-slot" data-time="08:00">08:00</div>
+                                    <div class="time-slot" data-time="09:00">09:00</div>
+                                    <div class="time-slot" data-time="10:00">10:00</div>
+                                    <div class="time-slot" data-time="11:00">11:00</div>
+                                    <div class="time-slot" data-time="12:00">12:00</div>
+                                    <div class="time-slot" data-time="13:00">13:00</div>
+                                    <div class="time-slot" data-time="14:00">14:00</div>
+                                    <div class="time-slot" data-time="15:00">15:00</div>
+                                    <div class="time-slot" data-time="16:00">16:00</div>
+                                    <div class="time-slot" data-time="17:00">17:00</div>
+                                    <div class="time-slot" data-time="18:00">18:00</div>
+                                    <div class="time-slot" data-time="19:00">19:00</div>
+                                    <div class="time-slot" data-time="20:00">20:00</div>
+                                    <div class="time-slot" data-time="21:00">21:00</div>
+                                    <div class="time-slot" data-time="22:00">22:00</div>
+                                    <div class="time-slot" data-time="23:00">23:00</div>
                                 </div>
                                 <input type="time" name="end_time" id="endTime" class="form-control mt-3" required>
                             </div>

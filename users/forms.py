@@ -13,9 +13,9 @@ class UserRegistrationForm(UserCreationForm):
         'placeholder': '手机号'
     }))
     user_type = forms.ChoiceField(
-        choices=User.USER_TYPE_CHOICES,
+        choices=[('user', '普通用户'), ('coach', '教练')],
         initial='user',
-        widget=forms.HiddenInput()
+        widget=forms.RadioSelect()
     )
     
     class Meta:
@@ -37,11 +37,18 @@ class UserRegistrationForm(UserCreationForm):
             'placeholder': '确认密码'
         })
     
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError('该用户名已被注册，请换一个')
+        return username
+
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data.get('email', '')
         user.phone = self.cleaned_data.get('phone', '')
         user.user_type = self.cleaned_data.get('user_type', 'user')
+        # 管理员只能通过后台创建，前端注册只能是用户或教练
         if user.user_type == 'admin':
             user.is_staff = True
         if commit:

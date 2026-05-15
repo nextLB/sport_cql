@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ coach.name }} - 体育场所预订系统{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'courses:coach_list' %}">教练团队</a></li>
+            <li class="breadcrumb-item active">{{ coach.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <div class="mx-auto mb-3" style="width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#11998e 0%,#38ef7d 100%);display:flex;align-items:center;justify-content:center;color:white;font-size:2.5rem;">{{ coach.name.0 }}</div>
+                    <h4>{{ coach.name }}</h4>
+                    <span class="badge bg-{% if coach.status == 'active' %}success{% else %}secondary{% endif %}">{{ coach.get_status_display }}</span>
+                    <hr>
+                    <p class="small"><i class="bi bi-gender-ambiguous me-1"></i>{{ coach.get_gender_display }}</p>
+                    <p class="small"><i class="bi bi-telephone me-1"></i>{{ coach.phone }}</p>
+                    <p class="small"><i class="bi bi-envelope me-1"></i>{{ coach.email|default:"未设置" }}</p>
+                    <p class="small"><i class="bi bi-star me-1"></i>擅长：{{ coach.speciality }}</p>
+                    <p class="small"><i class="bi bi-clock-history me-1"></i>教龄：{{ coach.experience }}年</p>
+                    {% if coach.certificate %}<p class="small"><i class="bi bi-patch-check me-1"></i>证书：{{ coach.certificate }}</p>{% endif %}
+                </div>
+                {% if user.user_type == 'admin' or user.is_staff %}
+                <div class="card-footer"><a href="{% url 'courses:coach_edit' coach.id %}" class="btn btn-outline-primary btn-sm w-100">编辑教练</a></div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header"><h5 class="mb-0">个人简介</h5></div>
+                <div class="card-body"><p>{{ coach.description|default:"暂无简介"|linebreaksbr }}</p></div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header"><h5 class="mb-0">教授课程</h5></div>
+                <div class="card-body">
+                    {% if courses %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead><tr><th>课程名称</th><th>类型</th><th>时间</th><th>价格</th><th>状态</th><th></th></tr></thead>
+                            <tbody>
+                            {% for c in courses %}
+                            <tr>
+                                <td>{{ c.name }}</td>
+                                <td>{{ c.get_course_type_display }}</td>
+                                <td>{{ c.schedule }}</td>
+                                <td>¥{{ c.price }}</td>
+                                <td><span class="badge bg-{% if c.status == 'enrolling' %}success{% else %}secondary{% endif %}">{{ c.get_status_display }}</span></td>
+                                <td><a href="{% url 'courses:course_detail' c.id %}" class="btn btn-sm btn-outline-primary">查看</a></td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center">暂无课程</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

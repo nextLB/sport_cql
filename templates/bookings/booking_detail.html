@@ -2,70 +2,94 @@
 
 {% block title %}预约详情 - 体育场所预订系统{% endblock %}
 
+{% block extra_css %}
+<style>
+    .detail-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    .detail-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 25px;
+        color: white;
+    }
+    .star-display { color: #ffd700; font-size: 1.2rem; }
+    .review-box {
+        background: #fff8e1;
+        border-radius: 15px;
+        padding: 20px;
+        border-left: 5px solid #ffd700;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">预约详情</h5>
-            </div>
-            <div class="card-body">
-                <table class="table">
-                    <tr>
-                        <th>预约编号:</th>
-                        <td>#{{ booking.id }}</td>
-                    </tr>
-                    <tr>
-                        <th>用户:</th>
-                        <td>{{ booking.user.username }}</td>
-                    </tr>
-                    <tr>
-                        <th>场馆:</th>
-                        <td>{{ booking.field.venue.name }}</td>
-                    </tr>
-                    <tr>
-                        <th>场地:</th>
-                        <td>{{ booking.field.name }}</td>
-                    </tr>
-                    <tr>
-                        <th>预约日期:</th>
-                        <td>{{ booking.booking_date }}</td>
-                    </tr>
-                    <tr>
-                        <th>预约时间:</th>
-                        <td>{{ booking.start_time }} - {{ booking.end_time }}</td>
-                    </tr>
-                    <tr>
-                        <th>总价:</th>
-                        <td><strong class="text-primary">¥{{ booking.total_price }}</strong></td>
-                    </tr>
-                    <tr>
-                        <th>联系电话:</th>
-                        <td>{{ booking.contact_phone }}</td>
-                    </tr>
-                    <tr>
-                        <th>状态:</th>
-                        <td>
-                            <span class="badge bg-{% if booking.status == 'pending' %}warning{% elif booking.status == 'confirmed' %}success{% elif booking.status == 'cancelled' or booking.status == 'rejected' %}danger{% else %}secondary{% endif %}">
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'bookings:my_bookings' %}">我的预约</a></li>
+            <li class="breadcrumb-item active">预约详情 #{{ booking.id }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card detail-card mb-4">
+                <div class="detail-header">
+                    <h4><i class="bi bi-info-circle me-2"></i>预约详情</h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-6 mb-3"><strong>预约编号：</strong>#{{ booking.id }}</div>
+                        <div class="col-6 mb-3"><strong>用户：</strong>{{ booking.user.username }}</div>
+                        <div class="col-6 mb-3"><strong>场馆：</strong>{{ booking.field.venue.name }}</div>
+                        <div class="col-6 mb-3"><strong>场地：</strong>{{ booking.field.name }}</div>
+                        <div class="col-6 mb-3"><strong>预约日期：</strong>{{ booking.booking_date }}</div>
+                        <div class="col-6 mb-3"><strong>预约时间：</strong>{{ booking.start_time }} - {{ booking.end_time }}</div>
+                        <div class="col-6 mb-3"><strong>总价：</strong><span class="fw-bold text-primary">¥{{ booking.total_price }}</span></div>
+                        <div class="col-6 mb-3"><strong>联系电话：</strong>{{ booking.contact_phone }}</div>
+                        <div class="col-6 mb-3"><strong>状态：</strong>
+                            <span class="badge bg-{% if booking.status == 'pending' %}warning{% elif booking.status == 'confirmed' %}success{% elif booking.status == 'cancelled' or booking.status == 'rejected' %}danger{% else %}info{% endif %}">
                                 {{ booking.get_status_display }}
                             </span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>备注:</th>
-                        <td>{{ booking.remark|default:"无" }}</td>
-                    </tr>
-                    <tr>
-                        <th>创建时间:</th>
-                        <td>{{ booking.created_at }}</td>
-                    </tr>
-                </table>
-                
-                {% if booking.status == 'pending' or booking.status == 'confirmed' %}
-                <a href="{% url 'bookings:booking_cancel' booking.id %}" class="btn btn-danger" onclick="return confirm('确定要取消该预约吗？')">取消预约</a>
-                {% endif %}
-                <a href="{% url 'bookings:my_bookings' %}" class="btn btn-secondary">返回列表</a>
+                        </div>
+                        <div class="col-6 mb-3"><strong>备注：</strong>{{ booking.remark|default:"无" }}</div>
+                        <div class="col-6 mb-3"><strong>创建时间：</strong>{{ booking.created_at|date:"Y-m-d H:i" }}</div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-3">
+                        {% if booking.user == request.user %}
+                            {% if booking.status == 'pending' or booking.status == 'confirmed' %}
+                            <a href="{% url 'bookings:booking_cancel' booking.id %}" class="btn btn-danger" onclick="return confirm('确定取消该预约？')"><i class="bi bi-x-circle me-1"></i>取消预约</a>
+                            {% endif %}
+                            {% if booking.status == 'completed' and not booking.review %}
+                            <a href="{% url 'bookings:booking_review' booking.id %}" class="btn btn-warning"><i class="bi bi-star me-1"></i>评价</a>
+                            {% endif %}
+                        {% endif %}
+                        <a href="{% url 'bookings:my_bookings' %}" class="btn btn-outline-secondary">返回列表</a>
+                    </div>
+                </div>
             </div>
+
+            <!-- 评价信息 -->
+            {% if booking.review %}
+            <div class="review-box mb-4">
+                <h5 class="mb-3"><i class="bi bi-star-fill me-2 star-display"></i>评价信息</h5>
+                <div class="mb-2">
+                    <span class="star-display">
+                        {% for i in "12345"|make_list %}
+                            {% if forloop.counter <= booking.review.rating %}&#9733;{% else %}&#9734;{% endif %}
+                        {% endfor %}
+                    </span>
+                    <span class="text-muted ms-2">({{ booking.review.rating }}分)</span>
+                </div>
+                <p class="mb-1">{{ booking.review.comment|default:"未填写评价内容" }}</p>
+                <small class="text-muted">{{ booking.review.created_at|date:"Y-m-d H:i" }}</small>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>

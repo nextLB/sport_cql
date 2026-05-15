@@ -21,6 +21,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     USER_TYPE_CHOICES = (
         ('user', '普通用户'),
+        ('coach', '教练'),
         ('admin', '管理员'),
     )
     

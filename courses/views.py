@@ -38,7 +38,7 @@ def coach_detail(request, coach_id):
     })
 
 
-@user_passes_test(lambda u: u.is_staff or u.user_type == 'admin')
+@user_passes_test(lambda u: u.is_staff or u.user_type in ['admin', 'coach'])
 def coach_create(request):
     if request.method == 'POST':
         form = CoachForm(request.POST, request.FILES)
@@ -51,7 +51,7 @@ def coach_create(request):
     return render(request, 'courses/coach_form.html', {'form': form})
 
 
-@user_passes_test(lambda u: u.is_staff or u.user_type == 'admin')
+@user_passes_test(lambda u: u.is_staff or u.user_type in ['admin', 'coach'])
 def coach_edit(request, coach_id):
     coach = get_object_or_404(Coach, id=coach_id)
     if request.method == 'POST':
@@ -65,7 +65,7 @@ def coach_edit(request, coach_id):
     return render(request, 'courses/coach_form.html', {'form': form})
 
 
-@user_passes_test(lambda u: u.is_staff or u.user_type == 'admin')
+@user_passes_test(lambda u: u.is_staff or u.user_type in ['admin', 'coach'])
 def coach_delete(request, coach_id):
     coach = get_object_or_404(Coach, id=coach_id)
     coach.delete()
@@ -122,7 +122,7 @@ def course_detail(request, course_id):
     })
 
 
-@user_passes_test(lambda u: u.is_staff or u.user_type == 'admin')
+@user_passes_test(lambda u: u.is_staff or u.user_type in ['admin', 'coach'])
 def course_create(request):
     if request.method == 'POST':
         form = CourseForm(request.POST)
@@ -135,7 +135,7 @@ def course_create(request):
     return render(request, 'courses/course_form.html', {'form': form})
 
 
-@user_passes_test(lambda u: u.is_staff or u.user_type == 'admin')
+@user_passes_test(lambda u: u.is_staff or u.user_type in ['admin', 'coach'])
 def course_edit(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     if request.method == 'POST':
@@ -149,7 +149,7 @@ def course_edit(request, course_id):
     return render(request, 'courses/course_form.html', {'form': form})
 
 
-@user_passes_test(lambda u: u.is_staff or u.user_type == 'admin')
+@user_passes_test(lambda u: u.is_staff or u.user_type in ['admin', 'coach'])
 def course_delete(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     course.delete()

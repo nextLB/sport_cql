@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from venues.models import Venue
 from bookings.models import Booking
 from users.models import User
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, Avg
 
 
 def home(request):
@@ -30,7 +30,32 @@ def home(request):
 def dashboard(request):
     if request.user.user_type == 'admin' or request.user.is_staff:
         return admin_dashboard(request)
+    elif request.user.user_type == 'coach':
+        return coach_dashboard(request)
     return user_dashboard(request)
+
+
+def coach_dashboard(request):
+    from courses.models import Course, CourseEnrollment
+    my_courses = Course.objects.filter(coach__phone=request.user.phone).order_by('-created_at')
+    # 如果教练还没有关联的Coach记录，则通过用户名匹配
+    if not my_courses.exists():
+        from courses.models import Coach
+        try:
+            coach = Coach.objects.get(name=request.user.username)
+            my_courses = Course.objects.filter(coach=coach).order_by('-created_at')
+        except Coach.DoesNotExist:
+            my_courses = Course.objects.none()
+
+    pending_enrollments = CourseEnrollment.objects.filter(
+        course__in=my_courses, status='enrolled'
+    ).count()
+
+    return render(request, 'dashboard/coach_dashboard.html', {
+        'my_courses': my_courses,
+        'course_count': my_courses.count(),
+        'pending_enrollments': pending_enrollments
+    })
 
 
 def user_dashboard(request):
@@ -55,13 +80,18 @@ def admin_dashboard(request):
     total_revenue = Booking.objects.filter(
         status__in=['confirmed', 'completed']
     ).aggregate(Sum('total_price'))['total_price__sum'] or 0
-    
+
     venue_stats = {
         'open': Venue.objects.filter(status='open').count(),
         'closed': Venue.objects.filter(status='closed').count(),
         'maintenance': Venue.objects.filter(status='maintenance').count(),
     }
-    
+
+    from bookings.models import BookingReview
+    total_reviews = BookingReview.objects.count()
+    recent_reviews = BookingReview.objects.select_related('booking__user', 'booking__field__venue').order_by('-created_at')[:5]
+    avg_rating = BookingReview.objects.aggregate(avg=Avg('rating'))['avg'] or 0
+
     return render(request, 'dashboard/admin_dashboard.html', {
         'total_venues': total_venues,
         'total_bookings': total_bookings,
@@ -71,5 +101,8 @@ def admin_dashboard(request):
         'total_users': total_users,
         'total_revenue': total_revenue,
         'recent_bookings': recent_bookings,
-        'venue_stats': venue_stats
+        'venue_stats': venue_stats,
+        'total_reviews': total_reviews,
+        'recent_reviews': recent_reviews,
+        'avg_rating': avg_rating
     })

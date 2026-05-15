@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}教练列表 - 体育场所预订系统{% endblock %}
+
+{% block extra_css %}
+<style>
+    .coach-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        transition: all 0.3s;
+    }
+    .coach-card:hover { transform: translateY(-5px); }
+    .coach-avatar {
+        width: 80px; height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        display: flex; align-items: center; justify-content: center;
+        color: white; font-size: 2rem; margin: 0 auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li>
+            <li class="breadcrumb-item active">教练团队</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3><i class="bi bi-people me-2"></i>教练团队</h3>
+        {% if user.user_type == 'admin' or user.is_staff %}
+        <a href="{% url 'courses:coach_create' %}" class="btn btn-success"><i class="bi bi-plus-lg me-1"></i>添加教练</a>
+        {% endif %}
+    </div>
+
+    <div class="row">
+        {% for coach in page_obj %}
+        <div class="col-md-3 col-sm-6 mb-4">
+            <div class="card coach-card text-center h-100">
+                <div class="card-body">
+                    <div class="coach-avatar mb-3">{{ coach.name.0 }}</div>
+                    <h5 class="card-title">{{ coach.name }}</h5>
+                    <p class="text-muted small mb-1">{{ coach.speciality }}</p>
+                    <p class="text-muted small mb-1">教龄：{{ coach.experience }}年</p>
+                    <span class="badge bg-{% if coach.status == 'active' %}success{% else %}secondary{% endif %}">{{ coach.get_status_display }}</span>
+                </div>
+                <div class="card-footer bg-white border-top-0">
+                    <a href="{% url 'courses:coach_detail' coach.id %}" class="btn btn-outline-primary btn-sm w-100">查看详情</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="bi bi-people text-muted" style="font-size: 4rem;"></i>
+            <h4 class="text-muted mt-3">暂无教练信息</h4>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if form.instance.pk %}编辑{% else %}添加{% endif %}教练 - 体育场所预订系统{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'courses:coach_list' %}">教练团队</a></li>
+            <li class="breadcrumb-item active">{% if form.instance.pk %}编辑教练{% else %}添加教练{% endif %}</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">{% if form.instance.pk %}编辑教练{% else %}添加教练{% endif %}</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">姓名</label>
+                                {{ form.name }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">性别</label>
+                                {{ form.gender }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">电话</label>
+                                {{ form.phone }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">邮箱</label>
+                                {{ form.email }}
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label">擅长项目</label>
+                                {{ form.speciality }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">教龄(年)</label>
+                                {{ form.experience }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">资质证书</label>
+                                {{ form.certificate }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">状态</label>
+                                {{ form.status }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">头像</label>
+                                {{ form.avatar }}
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label">个人简介</label>
+                                {{ form.description }}
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success"><i class="bi bi-check-circle me-1"></i>保存</button>
+                            <a href="{% url 'courses:coach_list' %}" class="btn btn-outline-secondary">返回</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

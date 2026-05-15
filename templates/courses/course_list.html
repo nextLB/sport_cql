@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}培训课程 - 体育场所预订系统{% endblock %}
+
+{% block extra_css %}
+<style>
+    .course-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        transition: all 0.3s;
+    }
+    .course-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+    .filter-bar {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 25px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">首页</a></li>
+            <li class="breadcrumb-item active">培训课程</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3><i class="bi bi-book me-2"></i>培训课程</h3>
+        {% if user.user_type == 'coach' or user.user_type == 'admin' or user.is_staff %}
+        <a href="{% url 'courses:course_create' %}" class="btn btn-success"><i class="bi bi-plus-lg me-1"></i>创建课程</a>
+        {% endif %}
+    </div>
+
+    <div class="filter-bar">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <input type="text" name="search" class="form-control" placeholder="搜索课程..." value="{{ search|default:'' }}">
+            </div>
+            <div class="col-md-3">
+                <select name="type" class="form-select">
+                    <option value="">全部类型</option>
+                    <option value="football" {% if current_type == 'football' %}selected{% endif %}>足球</option>
+                    <option value="basketball" {% if current_type == 'basketball' %}selected{% endif %}>篮球</option>
+                    <option value="tennis" {% if current_type == 'tennis' %}selected{% endif %}>网球</option>
+                    <option value="badminton" {% if current_type == 'badminton' %}selected{% endif %}>羽毛球</option>
+                    <option value="swimming" {% if current_type == 'swimming' %}selected{% endif %}>游泳</option>
+                    <option value="fitness" {% if current_type == 'fitness' %}selected{% endif %}>健身</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search me-1"></i>筛选</button>
+            </div>
+            <div class="col-md-2">
+                <a href="{% url 'courses:course_list' %}" class="btn btn-outline-secondary w-100">重置</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="row">
+        {% for course in page_obj %}
+        <div class="col-md-4 mb-4">
+            <div class="card course-card h-100">
+                <div class="card-body">
+                    <span class="badge bg-{% if course.status == 'enrolling' %}success{% elif course.status == 'in_progress' %}primary{% else %}secondary{% endif %} float-end">{{ course.get_status_display }}</span>
+                    <h5 class="card-title">{{ course.name }}</h5>
+                    <p class="text-muted small mb-1"><i class="bi bi-person me-1"></i>{{ course.coach.name }} 教练</p>
+                    <p class="text-muted small mb-1"><i class="bi bi-geo-alt me-1"></i>{{ course.venue.name }}</p>
+                    <p class="text-muted small mb-1"><i class="bi bi-clock me-1"></i>{{ course.schedule }}</p>
+                    <p class="text-muted small mb-2"><i class="bi bi-calendar me-1"></i>{{ course.start_date }} ~ {{ course.end_date }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-primary">¥{{ course.price }}</span>
+                        <span class="badge bg-info">{{ course.enrolled_count }}/{{ course.max_students }}人</span>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-top-0">
+                    <a href="{% url 'courses:course_detail' course.id %}" class="btn btn-outline-primary btn-sm w-100">查看详情</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="bi bi-inbox text-muted" style="font-size: 4rem;"></i>
+            <h4 class="text-muted mt-3">暂无培训课程</h4>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

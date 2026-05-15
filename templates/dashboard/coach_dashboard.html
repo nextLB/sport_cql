@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %}教练工作台 - 体育场所预订系统{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        padding: 40px 0;
+        border-radius: 0 0 30px 30px;
+        margin-bottom: 30px;
+    }
+    .stat-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        transition: all 0.3s;
+    }
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-header text-white">
+    <div class="container">
+        <h3><i class="bi bi-clipboard-check me-2"></i>教练工作台</h3>
+        <p class="mb-0">欢迎回来，{{ user.username }}教练</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card stat-card">
+                <div class="card-body d-flex align-items-center">
+                    <div class="stat-icon bg-primary text-white me-3">
+                        <i class="bi bi-book"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-0">{{ course_count }}</h5>
+                        <small class="text-muted">我的课程</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card stat-card">
+                <div class="card-body d-flex align-items-center">
+                    <div class="stat-icon bg-success text-white me-3">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-0">{{ pending_enrollments }}</h5>
+                        <small class="text-muted">已报名学员</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card stat-card">
+                <div class="card-body d-flex align-items-center">
+                    <div class="stat-icon bg-warning text-white me-3">
+                        <i class="bi bi-plus-circle"></i>
+                    </div>
+                    <div>
+                        <a href="{% url 'courses:course_create' %}" class="btn btn-warning">
+                            <i class="bi bi-plus-lg me-1"></i>创建新课程
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 我的课程列表 -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="bi bi-list-check me-2"></i>我的课程</h5>
+            <a href="{% url 'courses:course_list' %}" class="btn btn-sm btn-outline-primary">查看全部课程</a>
+        </div>
+        <div class="card-body">
+            {% if my_courses %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>课程名称</th>
+                            <th>类型</th>
+                            <th>上课时间</th>
+                            <th>价格</th>
+                            <th>报名人数</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for course in my_courses %}
+                        <tr>
+                            <td><a href="{% url 'courses:course_detail' course.id %}">{{ course.name }}</a></td>
+                            <td>{{ course.get_course_type_display }}</td>
+                            <td>{{ course.schedule }}</td>
+                            <td>¥{{ course.price }}</td>
+                            <td>{{ course.enrolled_count }}/{{ course.max_students }}</td>
+                            <td>
+                                <span class="badge bg-{% if course.status == 'enrolling' %}success{% elif course.status == 'in_progress' %}primary{% elif course.status == 'completed' %}secondary{% else %}danger{% endif %}">
+                                    {{ course.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'courses:course_edit' course.id %}" class="btn btn-sm btn-outline-primary">编辑</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-journal-x text-muted" style="font-size: 3rem;"></i>
+                <p class="text-muted mt-3">您还没有创建任何课程</p>
+                <a href="{% url 'courses:course_create' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg me-1"></i>创建第一门课程
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
